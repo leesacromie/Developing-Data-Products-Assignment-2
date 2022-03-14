@@ -1,0 +1,48 @@
+---
+title: "Capital City Populations Australia"
+author: "Leesa Cromie"
+date: "3/13/2022"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Capital City Populations Australia
+
+This presentation is going to look at the growth of Australian Capital cities from 2019 - 2020.
+
+- The data is downloadable from [Australian Bureau of Statistics](https://www.abs.gov.au/statistics/people/population/regional-population/latest-release#data-download)
+
+- Plotly has been used to create a barchart for the estimated population in 2019 and 2020 for each Australian capital city.
+
+- It can be seen from the next slide that all capital cities except Darwin had a small increase from 2019 to 2020.
+
+Reference: Australian Bureau of Statistics: Regional Populations, <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har> (Accessed 10 Mar 2022)
+
+```{r dataread, echo = FALSE}
+
+cities<-data.frame(read.csv("Australian Bureau of Statistics.csv", header = TRUE, na.strings = c("", "NA")))
+cities<- na.omit(cities)
+cities<-cities[1:8,]
+colnames(cities) <-c("City", "Year_2020", "Increase", "Percentage" )
+cities$Year_2020<-gsub(",","",cities$Year_2020)
+cities$Increase <- gsub(",","",cities$Increase)
+cities$Year_2020 <-as.numeric(cities$Year_2020)
+cities$Increase <-as.numeric(cities$Increase)
+Year_2019<-cities$Year_2020 - cities$Increase
+cities <- cbind(cities, Year_2019)
+```
+## Australian Capital City Estimated Populations 2019 and 2020.
+
+```{r plot, echo = FALSE, warning=FALSE, message=FALSE}
+library(plotly)
+
+fig<-plot_ly(cities, x = ~City, y = ~Year_2019, type = "bar", name = "2019")
+fig<-fig %>% add_trace(y=~Year_2020, name = "2020")
+fig<-fig%>% layout(yaxis = list(title = "ERP"), barmode = "group")
+
+fig
+
+```
